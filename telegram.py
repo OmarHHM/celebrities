@@ -6,7 +6,6 @@ from api_service import ApiService
 from db_config import BotModel
 from main import app
 
-
 @app.route('/bots', methods=['GET'])
 def get_bots():
     bots = BotModel.query.all()
@@ -27,13 +26,22 @@ def create_bot():
     bot.save()
     return jsonify({'message': 'Bot creado exitosamente.'})
 
-
 @app.route('/disable_bot/<int:bot_id>', methods=['PUT'])
 def disable_bot(bot_id):
         bot_data = BotModel.get_bot_by_id(bot_id)
         if bot_data:
             bot = BotModel.from_dict(bot_data)
             bot.update_status('inactive')
+            return jsonify({'message': 'Bot desactivado exitosamente.'})
+        else:
+            return jsonify({'message': 'Bot no encontrado.'}), 404
+        
+@app.route('/enable_bot/<int:bot_id>', methods=['PUT'])
+def disable_bot(bot_id):
+        bot_data = BotModel.get_bot_by_id(bot_id)
+        if bot_data:
+            bot = BotModel.from_dict(bot_data)
+            bot.update_status('active')
             return jsonify({'message': 'Bot desactivado exitosamente.'})
         else:
             return jsonify({'message': 'Bot no encontrado.'}), 404
