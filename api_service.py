@@ -1,6 +1,7 @@
 import openai
 import requests
 import io
+from db_config import BotModel
 
 
 openai.api_key = ''
@@ -31,14 +32,14 @@ class ApiService:
         If so, return Y; otherwise, return N. Message = {request}"""
         return cls.get_response_openAI(promp)
     @classmethod
-    def texto_to_voice(cls, response_chatgpt):
+    def texto_to_voice(cls, response_chatgpt, bot_data):
         CHUNK_SIZE = 1024
-        url = "https://api.elevenlabs.io/v1/text-to-speech/c4jQUZkogUxtzx3Vbl5l"
+        url = f"""https://api.elevenlabs.io/v1/text-to-speech/{bot_data.voice_id}"""
 
         headers = {
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
-            "xi-api-key": "126cb71a0e2dba4e5402ac3e47625b68"
+            "xi-api-key": bot_data.voice_key
         }
 
         data = {
@@ -57,20 +58,20 @@ class ApiService:
             if chunk:
                 audio_bytes.write(chunk)
 
-        audio_bytes.seek(0)  # Reiniciamos el puntero del flujo de bytes al principio
+        audio_bytes.seek(0)
         return audio_bytes
 
 
     @classmethod
-    def generate_response(cls, user_id, fan_name, request):
-        promp: str = f"""Eres la cantante Shakira y atenderás a tus fans, 
+    def generate_response(cls, user_id, fan_name, request, bot_data):
+        promp: str = f"""Eres el o la artista {bot_data.name} y atenderás a tus fans, 
         no respondas a los insultos y responde siempre de manera amable, 
         no te inventes nada y dirigite a tu fan por su nombre. 
         Este es el mensaje de {fan_name} : {request}"""
         response = cls.get_response_openAI(promp)
         if user_id not in cls.conversations:
             cls.conversations[user_id] = 0
-            return cls.texto_to_voice(response)
+            return cls.texto_to_voice(response,bot_data)
 
 
         return response
