@@ -1,10 +1,10 @@
 import openai
 import requests
 import io
-from db_config import BotModel
+from db_config import MessageModel
 
 
-openai.api_key = ''
+openai.api_key = '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'
 
 
 class ApiService:
@@ -24,6 +24,21 @@ class ApiService:
             presence_penalty=0.6,
         )
         generate_response = response.choices[0].text.strip()
+        return generate_response
+    
+    @classmethod
+    def get_response_chat_openAI(cls, messages):
+        response = openai.ChatCompletion.create(
+            model='gpt-3.5-turbo-0301',
+            messages=messages,
+            max_tokens=200,
+            temperature=0.9,
+            stop=None,
+            top_p=1,
+            frequency_penalty=0.0,
+            presence_penalty=0.6,
+        )
+        generate_response = response['choices'][0]['message']['content']
         return generate_response
 
     @classmethod
@@ -63,15 +78,41 @@ class ApiService:
 
 
     @classmethod
-    def generate_response(cls, user_id, fan_name, request, bot_data):
-        promp: str = f"""Eres el o la artista {bot_data.name} y atenderás a tus fans, 
-        no respondas a los insultos y responde siempre de manera amable, 
-        no te inventes nada y dirigite a tu fan por su nombre. 
-        Este es el mensaje de {fan_name} : {request}"""
-        response = cls.get_response_openAI(promp)
+    def generate_response(cls, user_id, fan_name, request, bot_data, username):
+
+        messages = [
+            {
+                "role": "system",
+                "content": f"""
+                Asume el rol del artista {bot_data.name}.
+                Tus respuestas seran orientadas a tus fans.
+                No debes usar insultos.
+                Debes responder de manera amable y alegre.
+                Debes user siempre el nombre de tu fan, el cual es {fan_name}."""
+            },
+        ]
+
+        messages_by_username = MessageModel.query.filter_by(username=username).all()
+        for message in messages_by_username:
+
+            messages.append({
+                "role": "user",
+                "content": message.user
+            })
+            messages.append({
+                "role": "assistant",
+                "content": message.bot
+            })
+
+        messages.append({
+            "role": "user",
+            "content": request
+        })
+
+        response = cls.get_response_chat_openAI(messages)
         if user_id not in cls.conversations:
             cls.conversations[user_id] = 0
-            return cls.texto_to_voice(response,bot_data)
+            return cls.texto_to_voice(response,bot_data) , response
 
 
-        return response
+        return response, response

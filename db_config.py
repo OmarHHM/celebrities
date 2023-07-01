@@ -4,6 +4,19 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
+class MessageModel(db.Model):
+    __tablename__ = 'message'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user = db.Column(db.String(1000), unique=True, nullable=False)
+    bot = db.Column(db.String(1000), nullable=False)
+    username = db.Column(db.String(1000), nullable=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
 class BotModel(db.Model):
     __tablename__ = 'bots'
 
@@ -13,6 +26,11 @@ class BotModel(db.Model):
     voice_id = db.Column(db.String(255), nullable=False)
     voice_key = db.Column(db.String(255), nullable=False)
     status = db.Column(db.String(255), nullable=False)
+    user = db.Column(db.String(255), nullable=False)
+    group_id = db.Column(db.Integer, nullable=False)
+    instagram = db.Column(db.String(255), nullable=False)
+    #user
+    #instagram
 
     def save(self):
         db.session.add(self)
@@ -29,7 +47,10 @@ class BotModel(db.Model):
             name=data.get('name'),
             voice_id=data.get('voice_id'),
             voice_key=data.get('voice_key'),
-            status=data.get('status')
+            status=data.get('status'),
+            user=data.get('user'),
+            group_id=data.get('group_id'),
+            instagram=data.get('instagram'),
         )
 
     @classmethod

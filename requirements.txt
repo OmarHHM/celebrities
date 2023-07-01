@@ -8,3 +8,4 @@ tweepy
 instagram_scraper
 flask_sqlalchemy
 psycopg2-binary
+flask_apscheduler
