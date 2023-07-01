@@ -4,7 +4,7 @@ import io
 from db_config import MessageModel
 
 
-openai.api_key = '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'
+
 
 
 class ApiService:
