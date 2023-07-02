@@ -13,7 +13,17 @@ from telegram import *
 import telebot
 from db_config import BotModel
 from scheduler import start_scheduler
+from flask_apscheduler import APScheduler
+from scheduler  import job
 
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
+@scheduler.task('interval', id='do_job_1', seconds=60)
+def job1():
+    with scheduler.app.app_context():
+        job()
 
 if __name__ == '__main__':
     with app.app_context():
