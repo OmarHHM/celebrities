@@ -4,9 +4,6 @@ import io
 from db_config import MessageModel
 
 
-
-
-
 class ApiService:
     MAX_VOICE_CALLS = 2
     conversations = {}
@@ -54,7 +51,7 @@ class ApiService:
         headers = {
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
-            "xi-api-key": bot_data.voice_key
+            "xi-api-key": "xxxxxx"
         }
 
         data = {

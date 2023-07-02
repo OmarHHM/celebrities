@@ -23,11 +23,11 @@ class BotModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     telegram_token = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(255), unique=True, nullable=False)
-    voice_id = db.Column(db.String(255), nullable=False)
-    voice_key = db.Column(db.String(255), nullable=False)
+    voice_id = db.Column(db.String(255), nullable=True)
+    voice_key = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(255), nullable=False)
     user = db.Column(db.String(255), nullable=False)
-    group_id = db.Column(db.Integer, nullable=False)
+    group_id = db.Column(db.String(255), nullable=True)
     instagram = db.Column(db.String(255), nullable=False)
     #user
     #instagram
@@ -38,6 +38,14 @@ class BotModel(db.Model):
 
     def update_status(self, new_status):
         self.status = new_status
+        db.session.commit()
+
+    def update_group_id(self, new_group_id):
+        self.group_id = new_group_id
+        db.session.commit()
+
+    def update_voice_id(self, new_voice_id):
+        self.voice_id = new_voice_id
         db.session.commit()
 
     @classmethod

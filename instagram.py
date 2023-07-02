@@ -35,7 +35,8 @@ def get_posts(username):
                 caption_file = read_file_by_extension('txt', username)
                 bytes_io = BytesIO(video_file)
                 video_bytes = bytes_io.getvalue()
-                celebrity_bot.send_video(-1001923653918, video_bytes, caption=caption_file)
+                if bot_data.group_id is not None:
+                    celebrity_bot.send_video(bot_data.group_id, video_bytes, caption=caption_file)
                 break
             else:
                 print(f"El último post de {username} no es un video.")
